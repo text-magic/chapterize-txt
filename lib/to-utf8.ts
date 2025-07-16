@@ -1,38 +1,35 @@
-import { Command } from "commander";
+import createDebug from "debug";
 import chardet from "chardet";
 import iconv from "iconv-lite";
 
-const program = new Command();
-program.version("0.0.1").description("Convert text file to UTF-8 encoding");
+const errorlog = createDebug("utf8:error");
+const infolog = createDebug("utf8:info");
+const verbose = createDebug("utf8:verbose");
 
-program
-  .command("toutf8")
-  .description("Convert text file to UTF-8 encoding")
-  .argument("<file>", "Input file path")
-  .action(async (file) => {
-    const arrbuf = await Bun.file(file).arrayBuffer();
-    const buffer = Buffer.from(arrbuf);
+export async function toUTF8(file: string): Promise<string | null> {
+  const arrbuf = await Bun.file(file).arrayBuffer();
+  const buffer = Buffer.from(arrbuf);
 
-    const detectedEncoding = chardet.detect(buffer);
+  const detectedEncoding = chardet.detect(buffer);
 
-    if (!detectedEncoding) {
-      console.log(`Failed to detect encoding for file ${file}`);
-      return;
-    }
+  if (!detectedEncoding) {
+    errorlog(`Failed to detect encoding for file ${file}`);
+    return null;
+  }
 
-    console.log(`File ${file} is ${detectedEncoding}`);
+  infolog(`File ${file} is ${detectedEncoding}`);
 
-    if (!iconv.encodingExists(detectedEncoding!)) {
-      console.log(`Encoding ${detectedEncoding} is not supported`);
-      return;
-    }
+  if (!iconv.encodingExists(detectedEncoding!)) {
+    errorlog(`Encoding ${detectedEncoding} is not supported`);
+    return null;
+  }
 
-    try {
-      const decodedText = iconv.decode(buffer, detectedEncoding);
-      console.log(decodedText);
-    } catch (error) {
-      console.error(`Failed to decode file ${file}: ${error}`);
-    }
-  });
-
-program.parse();
+  try {
+    const decodedText = iconv.decode(buffer, detectedEncoding);
+    verbose(decodedText);
+    return decodedText;
+  } catch (error) {
+    errorlog(`Failed to decode file ${file}: ${error}`);
+    return null;
+  }
+}
