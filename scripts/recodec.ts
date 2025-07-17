@@ -35,7 +35,19 @@ program
         console.log(`Failed to convert ${file}`);
         continue;
       }
-      await Bun.write(dstpath, text);
+
+      try {
+        // If a file starts with "---", add a newline before it avoid matter error
+        const cleanedText = text.startsWith("---") ? text.replace(/^---/, "\n------") : text;
+        const matterText = matter.stringify(cleanedText, {
+          name: path.basename(file),
+          path: path.dirname(file),
+        });
+        await Bun.write(dstpath, matterText);
+      } catch (error) {
+        console.log(`Failed to convert ${file}: ${error}`);
+      }
+
       bar.increment();
     }
     bar.stop();
@@ -51,13 +63,27 @@ program
     if (!text) {
       return;
     }
+
+    // If a file starts with "---", add a newline before it avoid matter error
+    const cleanedText = text.startsWith("---") ? text.replace(/^---/, "\n------") : text;
+
     const absolutePath = path.resolve(process.cwd(), file);
     const out = path.join(options.out, path.basename(file));
-    const matterText = matter.stringify(text, {
+    const matterText = matter.stringify(cleanedText, {
       lang: "utf-8",
       name: path.basename(file),
       path: absolutePath,
     });
     console.log(absolutePath);
     await Bun.write(out, matterText);
+  });
+
+program
+  .command("debug")
+  .description("Debug")
+  .action(() => {
+    const matterText = matter.stringify(`\n---text`, {
+      lang: "utf-8",
+    });
+    console.log(matterText);
   });
