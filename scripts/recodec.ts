@@ -1,8 +1,9 @@
 import path from "node:path";
 
 import { Command } from "commander";
-import { glob } from "fast-glob";
 import { SingleBar, Presets } from "cli-progress";
+import { glob } from "fast-glob";
+import * as matter from "gray-matter";
 
 import { toUTF8 } from "../lib/to-utf8";
 
@@ -50,6 +51,13 @@ program
     if (!text) {
       return;
     }
+    const absolutePath = path.resolve(process.cwd(), file);
     const out = path.join(options.out, path.basename(file));
-    await Bun.write(out, text);
+    const matterText = matter.stringify(text, {
+      lang: "utf-8",
+      name: path.basename(file),
+      path: absolutePath,
+    });
+    console.log(absolutePath);
+    await Bun.write(out, matterText);
   });

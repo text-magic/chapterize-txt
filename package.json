@@ -12,6 +12,7 @@
     "commander": "^14.0.0",
     "debug": "^4.4.1",
     "fast-glob": "^3.3.3",
+    "gray-matter": "^4.0.3",
     "iconv-lite": "^0.6.3"
   },
   "devDependencies": {
