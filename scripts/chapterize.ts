@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { Command } from "commander";
 import { chapterize } from "../lib/chapterize";
-import { toParagraph } from "../lib/to-paragraph";
+import { toParagraphs } from "../lib/to-paragraph";
 
 const program = new Command();
 program.version("0.0.1").description("Extract chapter titles from text file");
@@ -28,7 +28,7 @@ program
   .action(async (inputPath) => {
     const filePath = path.join(process.cwd(), inputPath);
     const fileContent = await Bun.file(filePath).text();
-    const paragraphs = toParagraph(fileContent).filter((p) => p.length > 0).map((p) => p.trim());
+    const paragraphs = toParagraphs(fileContent).filter((p) => p.length > 0).map((p) => p.trim());
 
     console.log(paragraphs.length);
     Bun.write("outputs/paragraphs.txt", JSON.stringify(paragraphs, null, 2));

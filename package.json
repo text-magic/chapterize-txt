@@ -13,7 +13,11 @@
     "debug": "^4.4.1",
     "fast-glob": "^3.3.3",
     "gray-matter": "^4.0.3",
-    "iconv-lite": "^0.6.3"
+    "iconv-lite": "^0.6.3",
+    "nlcst-to-string": "^4.0.0",
+    "parse-latin": "^7.0.0",
+    "unist-util-inspect": "^8.1.0",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@types/bun": "latest",
