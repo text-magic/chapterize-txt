@@ -1,8 +1,5 @@
-import path from "node:path";
-import { chapterize, isChapterTitle } from "./lib/chapterize";
+import { chapterize } from "./lib/chapterize";
+import { toParagraph } from "./lib/to-paragraph";
+import { toUTF8 } from "./lib/to-utf8";
 
-const filePath = path.join(__dirname, "tests", "sample.txt");
-const fileContent = await Bun.file(filePath).text();
-const titles = chapterize(fileContent);
-
-console.log(JSON.stringify(titles, null, 2));
+export { chapterize, toParagraph, toUTF8 };
